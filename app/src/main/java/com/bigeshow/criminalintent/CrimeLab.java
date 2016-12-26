@@ -8,6 +8,7 @@ import java.util.UUID;
 
 /**
  * Created by YinFei on 2016/12/23 0023.
+ * 单例模式的类
  */
 
 public class CrimeLab {

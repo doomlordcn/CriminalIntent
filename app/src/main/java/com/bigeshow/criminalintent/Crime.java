@@ -47,5 +47,6 @@ public class Crime {
 
         mId=UUID.randomUUID();
         mDate=new Date();
+        mSolved=false;
     }
 }
