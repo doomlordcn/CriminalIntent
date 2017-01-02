@@ -1,5 +1,6 @@
 package com.bigeshow.criminalintent;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -44,7 +44,9 @@ public class CrimeListFragment extends Fragment{
 
         @Override
         public void onClick(View v) {
-            Toast.makeText(getActivity(), mCrime.getTitle()+" clicked!", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getActivity(), mCrime.getTitle()+" clicked!", Toast.LENGTH_SHORT).show();
+            Intent intent=CrimeActivity.newIntent(getActivity(),mCrime.getId());
+            startActivity(intent);
         }
     }
     private class CrimeAdaper extends RecyclerView.Adapter<CrimeHolder>{
@@ -77,14 +79,25 @@ public class CrimeListFragment extends Fragment{
         View v= inflater.inflate(R.layout.fragment_crime_list,container,false);
         mCrimeRecyclerView=(RecyclerView)v.findViewById(R.id.crime_recycler_view);
         mCrimeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        UpdateUI();
+        updateUI();
         return v;
     }
 
-    private void UpdateUI(){
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateUI();;
+    }
+
+    private void updateUI(){
         CrimeLab crimeLab=CrimeLab.get(getActivity());
         List<Crime> crimes = crimeLab.getCrimes();
-        mCrimeAdaper=new CrimeAdaper(crimes);
-        mCrimeRecyclerView.setAdapter(mCrimeAdaper);
+        if(mCrimeAdaper==null){
+            mCrimeAdaper=new CrimeAdaper(crimes);
+            mCrimeRecyclerView.setAdapter(mCrimeAdaper);
+        }else{
+            mCrimeAdaper.notifyDataSetChanged();
+        }
+
     }
 }

@@ -14,24 +14,30 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 
+import java.util.UUID;
+
 public class CrimeFragment extends Fragment  {
 
     private Crime mCrime;
-    private EditText mEditText;
+    private EditText mTitleFiled;
     private Button mDateButton;
     private CheckBox mSolvedCheckBox;
+    private static final String ARG_CRIME_ID="crime_id";
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mCrime=new Crime();
+
+        UUID crimeId=(UUID)getArguments().getSerializable(ARG_CRIME_ID);
+        mCrime=CrimeLab.get(getActivity()).getCrime(crimeId);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v=inflater.inflate(R.layout.fragment_crime,container,false);
-        mEditText=(EditText)v.findViewById(R.id.crime_title);
-        mEditText.addTextChangedListener(new TextWatcher() {
+        mTitleFiled =(EditText)v.findViewById(R.id.crime_title);
+        mTitleFiled.setText(mCrime.getTitle());
+        mTitleFiled.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -51,6 +57,7 @@ public class CrimeFragment extends Fragment  {
         mDateButton.setText(DateFormat.format("EEEE,MMM dd yyyy",mCrime.getDate()));
         mDateButton.setEnabled(false);
         mSolvedCheckBox=(CheckBox) v.findViewById(R.id.crime_solved);
+        mSolvedCheckBox.setChecked(mCrime.isSolved());
         mSolvedCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -65,7 +72,13 @@ public class CrimeFragment extends Fragment  {
         super.onViewCreated(view, savedInstanceState);
 
     }
-
+    public static CrimeFragment newInstance(UUID crimeId){
+        Bundle args=new Bundle();
+        args.putSerializable(ARG_CRIME_ID,crimeId);
+        CrimeFragment fragment=new CrimeFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
     private EditText getCrimeTitle(){
         return (EditText) getView().findViewById(R.id.crime_title);
     }
